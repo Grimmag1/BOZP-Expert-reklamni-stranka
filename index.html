@@ -481,8 +481,7 @@
     }
 
     
-    function sendQuizResults(status) {
-        if (!contactData) return;
+    function buildResultsParams(status) {
         const params = new URLSearchParams({
             'form-name': 'quiz-results',
             session_id:  sessionId,
@@ -495,7 +494,21 @@
         for (let i = 0; i < answers.length; i++) {
             params.set('otazka_' + (i + 1), answers[i]);
         }
-        const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+        return params;
+    }
+
+    function sendQuizResults(status) {
+        if (!contactData) return;
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: buildResultsParams(status).toString()
+        });
+    }
+
+    function sendQuizResultsBeacon(status) {
+        if (!contactData) return;
+        const blob = new Blob([buildResultsParams(status).toString()], { type: 'application/x-www-form-urlencoded' });
         navigator.sendBeacon('/', blob);
     }
 
@@ -503,7 +516,7 @@
     document.addEventListener('visibilitychange', function () {
         if (document.hidden && contactData && !quizFinished && !partialSent && answers.length > 0) {
             partialSent = true;
-            sendQuizResults('nedokončeno');
+            sendQuizResultsBeacon('nedokončeno');
         }
     });
 
