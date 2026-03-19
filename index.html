@@ -141,7 +141,7 @@
             color: #111111;
         }
 
-        /* ── Step 1 — contact form ───────────────────────────── */
+        /* ── Contact form card ───────────────────────────────── */
         .form-card {
             background: #ffffff;
             border: 1px solid #e8e8e8;
@@ -298,34 +298,13 @@
 <body>
 
 <!-- ═══════════════════════════════════════════════════════════
-     Step 1 — Contact form
+     Step 1 — Intro
 ════════════════════════════════════════════════════════════ -->
 <div id="step1" class="step active">
-    <div class="form-card">
+    <div class="card">
         <h1>BOZP Expert</h1>
-        <p>Vyplňte své údaje a otestujte své znalosti BOZP.</p>
-
-        <form id="contact-form">
-            <div class="form-group">
-                <label for="name">Jméno</label>
-                <input id="name" type="text" name="name" placeholder="Vaše jméno">
-                <span class="field-error" id="name-error">Zadejte prosím své jméno.</span>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input id="email" type="email" name="email" placeholder="your@email.com">
-                <span class="field-error" id="email-error">Zadejte platnou emailovou adresu.</span>
-            </div>
-
-            <div class="form-group">
-                <label for="phone">Telefon</label>
-                <input id="phone" type="tel" name="phone" placeholder="+420 123 456 789">
-                <span class="field-error" id="phone-error">Zadejte platné číslo (min. 9 číslic).</span>
-            </div>
-
-            <button type="submit" id="submit-btn" class="btn form-submit">Vstoupit do hry</button>
-        </form>
+        <p>Otestujte své znalosti BOZP ve 4 rychlých otázkách.</p>
+        <button class="btn" onclick="goToStep(2)">Spustit test</button>
     </div>
 </div>
 
@@ -390,42 +369,64 @@
 </div>
 
 
-<!-- Hidden Netlify form for quiz results (detected at deploy time) -->
-<form name="quiz-send" data-netlify="true" hidden>
-    <input name="form-name">
-    <input name="session_id">
-    <input name="name">
-    <input name="email">
-    <input name="phone">
-    <input name="status">
-    <input name="skore">
-    <input name="otazka_1">
-    <input name="otazka_2">
-    <input name="otazka_3">
-    <input name="otazka_4">
-</form>
-
 <!-- ═══════════════════════════════════════════════════════════
-     Step 6 — Results
+     Step 6 — Contact form
 ════════════════════════════════════════════════════════════ -->
 <div id="step6" class="step">
+    <div class="form-card">
+        <h1>Skoro hotovo</h1>
+        <p>Už stačí jen vyplnit kontakt</p>
+
+        <form id="contact-form">
+            <!-- Hidden answer fields, populated by JS before showing this step -->
+            <input type="hidden" name="skore"    id="hidden-skore">
+            <input type="hidden" name="otazka_1" id="hidden-otazka-1">
+            <input type="hidden" name="otazka_2" id="hidden-otazka-2">
+            <input type="hidden" name="otazka_3" id="hidden-otazka-3">
+            <input type="hidden" name="otazka_4" id="hidden-otazka-4">
+
+            <div class="form-group">
+                <label for="name">Jméno</label>
+                <input id="name" type="text" name="name" placeholder="Vaše jméno">
+                <span class="field-error" id="name-error">Zadejte prosím své jméno.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" placeholder="your@email.com">
+                <span class="field-error" id="email-error">Zadejte platnou emailovou adresu.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefon</label>
+                <input id="phone" type="tel" name="phone" placeholder="+420 123 456 789">
+                <span class="field-error" id="phone-error">Zadejte platné číslo (min. 9 číslic).</span>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn form-submit">Zobrazit výsledky</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 7 — Results
+════════════════════════════════════════════════════════════ -->
+<div id="step7" class="step">
     <div class="card">
         <h1>Výsledky</h1>
         <div class="score-display" id="score-display">0 / 4</div>
-        <p id="score-text">Text, který se upraví dle počtu správných odpovědí.</p>
-        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">ZKus si demo</a>
+        <p id="score-text"></p>
+        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">Zkus si demo</a>
     </div>
 </div>
 
 
 <script>
+    const FORMSPREE_URL = 'https://formspree.io/f/mdawbojv';
     const TOTAL_QUESTIONS = 4;
-    const sessionId = Math.random().toString(36).slice(2);
     let score = 0;
-    let contactData = null;
-    let answers = []
-    let quizFinished = false;
-    let partialSent = false;
+    let answers = [];
 
     function goToStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -444,25 +445,28 @@
             el.classList.add('wrong');
         }
 
-        const questionNumber = parseInt(el.closest('.step').id.replace('step', '')) - 1; // step2 = Q1
-        answers[questionNumber - 1] = el.textContent.trim();
-
         const currentStep = parseInt(el.closest('.step').id.replace('step', ''));
-        const nextStep = currentStep + 1;
+        answers[currentStep - 2] = el.textContent.trim(); // step2=Q1 → index 0
 
         setTimeout(() => {
-            if (nextStep > TOTAL_QUESTIONS + 1) {
-                showResults();
+            if (currentStep === TOTAL_QUESTIONS + 1) {
+                showContactForm();
             } else {
-                goToStep(nextStep);
+                goToStep(currentStep + 1);
             }
         }, 500);
     }
 
-    function showResults() {
-        quizFinished = true;
-        document.getElementById('score-display').textContent = score + ' / ' + TOTAL_QUESTIONS;
+    function showContactForm() {
+        document.getElementById('hidden-skore').value = score + ' / ' + TOTAL_QUESTIONS;
+        for (let i = 0; i < answers.length; i++) {
+            document.getElementById('hidden-otazka-' + (i + 1)).value = answers[i];
+        }
+        goToStep(6);
+    }
 
+    function showResults() {
+        document.getElementById('score-display').textContent = score + ' / ' + TOTAL_QUESTIONS;
         const textEl = document.getElementById('score-text');
         if (score === TOTAL_QUESTIONS) {
             textEl.textContent = 'Všechno správně';
@@ -475,36 +479,8 @@
         } else {
             textEl.textContent = ':( nula';
         }
-
-        goToStep(6);
+        goToStep(7);
     }
-
-
-    function buildResultsParams(status) {
-        const params = new URLSearchParams({
-            'form-name': 'quiz-send',
-            session_id:  sessionId,
-            name:        contactData.name,
-            email:       contactData.email,
-            phone:       contactData.phone,
-            status:      status,
-            skore:       score + ' / ' + TOTAL_QUESTIONS,
-        });
-        for (let i = 0; i < answers.length; i++) {
-            params.set('otazka_' + (i + 1), answers[i]);
-        }
-        return params;
-    }
-
-    // Send everything once when user leaves (tab close / app switch)
-    document.addEventListener('visibilitychange', function () {
-        if (document.hidden && contactData && !partialSent) {
-            partialSent = true;
-            const status = quizFinished ? 'dokončeno' : 'nedokončeno';
-            const blob = new Blob([buildResultsParams(status).toString()], { type: 'application/x-www-form-urlencoded' });
-            navigator.sendBeacon('/', blob);
-        }
-    });
 
     // ── Form validation ────────────────────────────────────────
 
@@ -544,23 +520,35 @@
     document.getElementById('email').addEventListener('blur', validateEmail);
     document.getElementById('phone').addEventListener('blur', validatePhone);
 
-    document.getElementById('contact-form').addEventListener('submit', function (e) {
+    document.getElementById('contact-form').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const ok = validateName() & validateEmail() & validatePhone();
         if (!ok) return;
 
-        contactData = {
-            name:  document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-        };
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Odesílám...';
 
-        score = 0;
-        answers = [];
-        quizFinished = false;
-        partialSent = false;
-        goToStep(2);
+        try {
+            const res = await fetch(FORMSPREE_URL, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (res.ok) {
+                showResults();
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Zobrazit výsledky';
+                alert('Chyba ' + res.status + '. Zkuste to prosím znovu.');
+            }
+        } catch (err) {
+            btn.disabled = false;
+            btn.textContent = 'Zobrazit výsledky';
+            alert('Chyba připojení: ' + err.message);
+        }
     });
 </script>
 
