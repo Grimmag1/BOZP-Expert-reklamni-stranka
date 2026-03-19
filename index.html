@@ -17,7 +17,7 @@
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
             background: #ffffff;
-            background-image: radial-gradient(ellipse at 50% 20%, #ffe8e0 0%, #ffffff 60%);
+            background-image: radial-gradient(ellipse at 50% 20%, #521d0c 0%, #000000 60%);
             min-height: 100vh;
             min-height: 100svh;
             display: flex;
@@ -251,13 +251,25 @@
             75%       { transform: translateY(8px); }
         }
 
+        /* ── Question card header ───────────────────────────── */
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+        }
+
         /* ── Question counter ───────────────────────────────── */
         .question-counter {
-            font-size: 0.8rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: #F05A28;
-            text-align: right;
-            margin-bottom: 12px;
             letter-spacing: 0.05em;
         }
 
@@ -302,8 +314,7 @@
 ════════════════════════════════════════════════════════════ -->
 <div id="step1" class="step active">
     <div class="card">
-        <h1>BOZP Expert</h1>
-        <p>Otestujte své znalosti BOZP ve 4 rychlých otázkách.</p>
+        <h1>Ověřte si jak je na tom Vaše BOZP</h1>
         <button class="btn" onclick="goToStep(2)">Spustit test</button>
     </div>
 </div>
@@ -314,7 +325,10 @@
 ════════════════════════════════════════════════════════════ -->
 <div id="step2" class="step">
     <div class="question-card">
-        <div class="question-counter">1 / 4</div>
+        <div class="card-header">
+            <img src="icon.png" class="card-icon" alt="">
+            <div class="question-counter">1 / 4</div>
+        </div>
         <h2>Máte provedenou aktuální kategorizaci pracovních pozic?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
@@ -329,7 +343,10 @@
 ════════════════════════════════════════════════════════════ -->
 <div id="step3" class="step">
     <div class="question-card">
-        <div class="question-counter">2 / 4</div>
+        <div class="card-header">
+            <img src="icon.png" class="card-icon" alt="">
+            <div class="question-counter">2 / 4</div>
+        </div>
         <h2>Máte zpracovaná a vyhodnocená rizika v rámci vaší společnosti?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
@@ -344,7 +361,10 @@
 ════════════════════════════════════════════════════════════ -->
 <div id="step4" class="step">
     <div class="question-card">
-        <div class="question-counter">3 / 4</div>
+        <div class="card-header">
+            <img src="icon.png" class="card-icon" alt="">
+            <div class="question-counter">3 / 4</div>
+        </div>
         <h2>Máte přehled o povinných termínech školení BOZP?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
@@ -359,7 +379,10 @@
 ════════════════════════════════════════════════════════════ -->
 <div id="step5" class="step">
     <div class="question-card">
-        <div class="question-counter">4 / 4</div>
+        <div class="card-header">
+            <img src="icon.png" class="card-icon" alt="">
+            <div class="question-counter">4 / 4</div>
+        </div>
         <h2>Mají k BOZP agendě přístup všichni zaměstnanci ve firmě?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
@@ -404,6 +427,7 @@
             </div>
 
             <button type="submit" id="submit-btn" class="btn form-submit">Zobrazit výsledky</button>
+            <button type="button" onclick="showResults()" style="width:100%;margin-top:8px;padding:10px;background:none;border:1px dashed #ccc;border-radius:8px;color:#aaa;font-size:0.8rem;cursor:pointer;">přeskočit</button>
         </form>
     </div>
 </div>
@@ -416,8 +440,8 @@
     <div class="card">
         <div class="score-display" id="score-display">0 / 4</div>
         <h1 id="score-text"></h1>
-        <h2 id="score-text-second"></h2>
-        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">Vyzkoušet demo</a>
+        <h2 id="score-text-second" style="font-weight: 400;"></h2>
+        <a href="https://bozp.expert/home" class="btn" style="display:block;text-decoration:none;margin-top:16px;padding:20px 36px;font-size:1.5rem;">BOZP.Expert</a>
     </div>
 </div>
 
@@ -471,19 +495,19 @@
         const textEl2 = document.getElementById('score-text-second');
         if (score === TOTAL_QUESTIONS) {
             textEl.textContent = 'Výborně! BOZP máte velmi dobře nastavené a většinu klíčových oblastí pod kontrolou.';
-            textEl2.textContent = 'Ale i dobře nastavené BOZP může být zbytečně náročné - zjednodušte si každodenní rutinu s BOZP.Expertem';
+            textEl2.textContent = 'Ale i dobře nastavené BOZP může být zbytečně náročné - zjednodušte si každodenní rutinu s';
         } else if (score === TOTAL_QUESTIONS - 1) {
             textEl.textContent = 'BOZP máte nastavené na velmi dobré úrovni, ale ne vše máte plně pod kontrolou. ';
-            textEl2.textContent = 'S BOZP.Expertem získáte to co vám chybí - plnou kontrolu a přehlednost v každé situaci.';
+            textEl2.textContent = 'Přehlednost a plnou kontrolu nad BOZP získáte s';
         } else if (score === TOTAL_QUESTIONS - 2) {
-            textEl.textContent = 'Vaše BOZP má základ, na kterém lze stavět, ale aktuálně není řízeno systematicky.';
-            textEl2.textContent = 'To zvyšuje chybovost a nedodržení důležitých termínů - zabraňte tomu společně s námi a BOZP.Expertem.';
+            textEl.textContent = 'Vaše BOZP má základ, na kterém lze stavět, ale aktuálně mu chybí systém.';
+            textEl2.textContent = 'Nedostatečný přehled v termínech přináší vyšší chybovost, zabraňte tomu s';
         } else if (score === TOTAL_QUESTIONS - 3) {
-            textEl.textContent = 'Vaše BOZP není aktuálně pod kontrolou a představuje tím pádem reálné riziko pro Vaši firmu.';
-            textEl2.textContent = 'Dejte jí pevný systém a přehlednost společně s námi a BOZP.Expertem.';
+            textEl.textContent = 'Vaše BOZP není aktuálně pod kontrolou a představuje reálné riziko pro Vaše podnikání.';
+            textEl2.textContent = 'Dopřejte Vaší firmě pevný systém a přehlednost společně s';
         } else {
-            textEl.textContent = 'Vaše BOZP v tuto chvíli není - dostačující ani v přehledné formě. ';
-            textEl2.textContent = 'Pojďme se na to společně, s BOZP.Expertem podívat a nastavit fungující systém pro Vaši firmu i Váš klid.';
+            textEl.textContent = 'Zdá se, že Vaše BOZP v tuto chvíli zjevně není nastaveno.';
+            textEl2.textContent = 'Pojďme se na to společně, s BOZP.Expert podívat a nastavit fungující systém pro Vaši firmu i Váš klid.';
         }
         goToStep(7);
     }
