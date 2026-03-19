@@ -477,10 +477,9 @@
         }
 
         goToStep(6);
-        sendQuizResults('dokončeno');
     }
 
-    
+
     function buildResultsParams(status) {
         const params = new URLSearchParams({
             'form-name': 'quiz-send',
@@ -497,26 +496,13 @@
         return params;
     }
 
-    function sendQuizResults(status) {
-        if (!contactData) return;
-        fetch('/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: buildResultsParams(status).toString()
-        });
-    }
-
-    function sendQuizResultsBeacon(status) {
-        if (!contactData) return;
-        const blob = new Blob([buildResultsParams(status).toString()], { type: 'application/x-www-form-urlencoded' });
-        navigator.sendBeacon('/', blob);
-    }
-
-    // Send partial data once if user leaves mid-quiz
+    // Send everything once when user leaves (tab close / app switch)
     document.addEventListener('visibilitychange', function () {
-        if (document.hidden && contactData && !quizFinished && !partialSent && answers.length > 0) {
+        if (document.hidden && contactData && !partialSent) {
             partialSent = true;
-            sendQuizResultsBeacon('nedokončeno');
+            const status = quizFinished ? 'dokončeno' : 'nedokončeno';
+            const blob = new Blob([buildResultsParams(status).toString()], { type: 'application/x-www-form-urlencoded' });
+            navigator.sendBeacon('/', blob);
         }
     });
 
