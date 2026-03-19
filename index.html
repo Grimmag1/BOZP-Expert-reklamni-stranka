@@ -414,10 +414,10 @@
 ════════════════════════════════════════════════════════════ -->
 <div id="step7" class="step">
     <div class="card">
-        <h1>Výsledky</h1>
         <div class="score-display" id="score-display">0 / 4</div>
-        <p id="score-text"></p>
-        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">Zkus si demo</a>
+        <h1 id="score-text"></h1>
+        <h2 id="score-text-second"></h2>
+        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">Vyzkoušet demo</a>
     </div>
 </div>
 
@@ -468,16 +468,22 @@
     function showResults() {
         document.getElementById('score-display').textContent = score + ' / ' + TOTAL_QUESTIONS;
         const textEl = document.getElementById('score-text');
+        const textEl2 = document.getElementById('score-text-second');
         if (score === TOTAL_QUESTIONS) {
-            textEl.textContent = 'Všechno správně';
+            textEl.textContent = 'Výborně! BOZP máte velmi dobře nastavené a většinu klíčových oblastí pod kontrolou.';
+            textEl2.textContent = 'Ale i dobře nastavené BOZP může být zbytečně náročné - zjednodušte si každodenní rutinu s BOZP.Expertem';
         } else if (score === TOTAL_QUESTIONS - 1) {
-            textEl.textContent = 'Skoro všechno správně';
+            textEl.textContent = 'BOZP máte nastavené na velmi dobré úrovni, ale ne vše máte plně pod kontrolou. ';
+            textEl2.textContent = 'S BOZP.Expertem získáte to co vám chybí - plnou kontrolu a přehlednost v každé situaci.';
         } else if (score === TOTAL_QUESTIONS - 2) {
-            textEl.textContent = 'Zlatý střed';
+            textEl.textContent = 'Vaše BOZP má základ, na kterém lze stavět, ale aktuálně není řízeno systematicky.';
+            textEl2.textContent = 'To zvyšuje chybovost a nedodržení důležitých termínů - zabraňte tomu společně s námi a BOZP.Expertem.';
         } else if (score === TOTAL_QUESTIONS - 3) {
-            textEl.textContent = 'Mohlo by být lepší';
+            textEl.textContent = 'Vaše BOZP není aktuálně pod kontrolou a představuje tím pádem reálné riziko pro Vaši firmu.';
+            textEl2.textContent = 'Dejte jí pevný systém a přehlednost společně s námi a BOZP.Expertem.';
         } else {
-            textEl.textContent = ':( nula';
+            textEl.textContent = 'Vaše BOZP v tuto chvíli není - dostačující ani v přehledné formě. ';
+            textEl2.textContent = 'Pojďme se na to společně, s BOZP.Expertem podívat a nastavit fungující systém pro Vaši firmu i Váš klid.';
         }
         goToStep(7);
     }
