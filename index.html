@@ -391,7 +391,7 @@
 
 
 <!-- Hidden Netlify form for quiz results (detected at deploy time) -->
-<form name="quiz-results" data-netlify="true" hidden>
+<form name="quiz-send" data-netlify="true" hidden>
     <input name="form-name">
     <input name="session_id">
     <input name="name">
@@ -483,7 +483,7 @@
     
     function buildResultsParams(status) {
         const params = new URLSearchParams({
-            'form-name': 'quiz-results',
+            'form-name': 'quiz-send',
             session_id:  sessionId,
             name:        contactData.name,
             email:       contactData.email,
