@@ -336,7 +336,7 @@
 <div id="step2" class="step">
     <div class="question-card">
         <div class="question-counter">1 / 4</div>
-        <h2>Otazka 1</h2>
+        <h2>Máte provedenou aktuální kategorizaci pracovních pozic?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
             <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
@@ -351,7 +351,7 @@
 <div id="step3" class="step">
     <div class="question-card">
         <div class="question-counter">2 / 4</div>
-        <h2>Otazka 2</h2>
+        <h2>Máte zpracovaná a vyhodnocená rizika v rámci vaší společnosti?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
             <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
@@ -366,7 +366,7 @@
 <div id="step4" class="step">
     <div class="question-card">
         <div class="question-counter">3 / 4</div>
-        <h2>Otazka 3</h2>
+        <h2>Máte přehled o povinných termínech školení BOZP?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
             <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
@@ -381,7 +381,7 @@
 <div id="step5" class="step">
     <div class="question-card">
         <div class="question-counter">4 / 4</div>
-        <h2>Otazka 4</h2>
+        <h2>Mají k BOZP agendě přístup všichni zaměstnanci ve firmě?</h2>
         <div class="options">
             <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
             <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
@@ -465,13 +465,13 @@
 
         const textEl = document.getElementById('score-text');
         if (score === TOTAL_QUESTIONS) {
-            textEl.textContent = 'Vsechno spravne';
+            textEl.textContent = 'Všechno správně';
         } else if (score === TOTAL_QUESTIONS - 1) {
-            textEl.textContent = 'Dobre mas 3';
+            textEl.textContent = 'Skoro všechno správně';
         } else if (score === TOTAL_QUESTIONS - 2) {
-            textEl.textContent = 'DObre mas 2';
+            textEl.textContent = 'Zlatý střed';
         } else if (score === TOTAL_QUESTIONS - 3) {
-            textEl.textContent = 'DObre mas 1';
+            textEl.textContent = 'Mohlo by být lepší';
         } else {
             textEl.textContent = ':( nula';
         }
