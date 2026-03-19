@@ -305,9 +305,7 @@
         <h1>BOZP Expert</h1>
         <p>Vyplňte své údaje a otestujte své znalosti BOZP.</p>
 
-        <form id="contact-form" name="contact" data-netlify="true">
-            <input type="hidden" name="form-name" value="contact">
-            <input type="hidden" name="session_id" id="contact-session-id">
+        <form id="contact-form">
             <div class="form-group">
                 <label for="name">Jméno</label>
                 <input id="name" type="text" name="name" placeholder="Vaše jméno">
@@ -547,15 +545,11 @@
     document.getElementById('email').addEventListener('blur', validateEmail);
     document.getElementById('phone').addEventListener('blur', validatePhone);
 
-    document.getElementById('contact-form').addEventListener('submit', async function (e) {
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
         const ok = validateName() & validateEmail() & validatePhone();
         if (!ok) return;
-
-        const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        btn.textContent = 'Startujeme...';
 
         contactData = {
             name:  document.getElementById('name').value.trim(),
@@ -563,34 +557,11 @@
             phone: document.getElementById('phone').value.trim(),
         };
 
-        document.getElementById('contact-session-id').value = sessionId;
-
-        try {
-            const formData = new FormData(this);
-            const res = await fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            });
-
-            if (res.ok) {
-                score = 0;
-                answers = [];
-                quizFinished = false;
-                partialSent = false;
-                goToStep(2);
-            } else {
-                contactData = null;
-                btn.disabled = false;
-                btn.textContent = 'Vstoupit do hry';
-                alert('Chyba ' + res.status + '. Zkuste to prosím znovu.');
-            }
-        } catch (err) {
-            contactData = null;
-            btn.disabled = false;
-            btn.textContent = 'Vstoupit do hry';
-            alert('Chyba připojení: ' + err.message);
-        }
+        score = 0;
+        answers = [];
+        quizFinished = false;
+        partialSent = false;
+        goToStep(2);
     });
 </script>
 
