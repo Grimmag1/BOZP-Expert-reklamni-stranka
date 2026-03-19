@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOZP Expert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #ffffff;
+            background-image: radial-gradient(ellipse at 50% 20%, #ffe8e0 0%, #ffffff 60%);
+            min-height: 100vh;
+            min-height: 100svh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        /* ── Steps ─────────────────────────────────────────── */
+        .step {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .step.active {
+            display: flex;
+            animation: fadeIn 0.35s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Shared card ────────────────────────────────────── */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-top: 4px solid #F05A28;
+            border-radius: 16px;
+            padding: 48px 40px;
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.08),
+                        0 0 0 1px rgba(240, 90, 40, 0.06);
+        }
+
+        .card h1 {
+            font-size: 1.9rem;
+            font-weight: 900;
+            color: #F05A28;
+            margin-bottom: 14px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .card p {
+            color: #666666;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            font-size: 1rem;
+        }
+
+        /* ── Button ─────────────────────────────────────────── */
+        .btn {
+            background: #F05A28;
+            color: #ffffff;
+            border: none;
+            padding: 16px 36px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:active { transform: scale(0.97); background: #d94e20; }
+
+        /* ── Question cards ─────────────────────────────────── */
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-top: 4px solid #F05A28;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.08);
+        }
+
+        .question-card h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #111111;
+            margin-bottom: 28px;
+            line-height: 1.45;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: #f7f7f7;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 16px 20px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            font-family: inherit;
+            color: #444444;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            transition: border-color 0.2s, background 0.2s, color 0.2s;
+        }
+
+        .option:active {
+            border-color: #F05A28;
+            background: #fff2ee;
+            color: #111111;
+        }
+
+        /* ── Step 1 — contact form ───────────────────────────── */
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-top: 4px solid #F05A28;
+            border-radius: 16px;
+            padding: 48px 40px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.08),
+                        0 0 0 1px rgba(240, 90, 40, 0.06);
+        }
+
+        .form-card h1 {
+            font-size: 1.9rem;
+            font-weight: 900;
+            color: #F05A28;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .form-card > p {
+            color: #666666;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #999999;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #f7f7f7;
+            color: #111111;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input::placeholder { color: #bbbbbb; }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #F05A28;
+        }
+
+        .form-group input.invalid {
+            border-color: #cc3344;
+        }
+
+        .field-error {
+            display: none;
+            color: #cc3344;
+            font-size: 0.78rem;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .field-error.visible {
+            display: block;
+        }
+
+        .form-submit {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        /* ── Wrong-answer animation ─────────────────────────── */
+        .wrong {
+            border-color: #cc3344 !important;
+            background: rgba(204, 51, 68, 0.08) !important;
+            animation: wrong_shake 0.4s;
+        }
+        @keyframes wrong_shake {
+            0%, 100% { transform: translateX(0); }
+            25%       { transform: translateX(-6px); }
+            75%       { transform: translateX(6px); }
+        }
+
+        /* ── Correct-answer animation ────────────────────────── */
+        .correct {
+            border-color: #F05A28 !important;
+            box-shadow: 0 0 24px rgba(240, 90, 40, 0.35) !important;
+            animation: correct_bounce 0.4s;
+        }
+        @keyframes correct_bounce {
+            0%, 100% { transform: translateY(0); }
+            25%       { transform: translateY(-8px); }
+            75%       { transform: translateY(8px); }
+        }
+
+        /* ── Question counter ───────────────────────────────── */
+        .question-counter {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #F05A28;
+            text-align: right;
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Result score ────────────────────────────────────── */
+        .score-display {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #F05A28;
+            margin: 16px 0 8px;
+        }
+
+        /* ── Hover effects ──────────────────────────────────── */
+        @media (hover: hover) {
+            .btn:hover {
+                background: #e04e20;
+                box-shadow: 0 4px 24px rgba(240, 90, 40, 0.35);
+            }
+            .option:hover {
+                border-color: #F05A28;
+                background: #fff2ee;
+                color: #111111;
+            }
+        }
+
+        /* ── Small screens ──────────────────────────────────── */
+        @media (max-width: 480px) {
+            .step          { padding: 12px; }
+            .card          { padding: 32px 20px; border-radius: 12px; }
+            .card h1       { font-size: 1.45rem; }
+            .card p        { font-size: 0.95rem; margin-bottom: 24px; }
+            .form-card     { padding: 32px 20px; border-radius: 12px; }
+            .form-card h1  { font-size: 1.45rem; }
+            .question-card { padding: 28px 16px; border-radius: 12px; }
+            .question-card h2 { font-size: 1.1rem; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 1 — Contact form
+════════════════════════════════════════════════════════════ -->
+<div id="step1" class="step active">
+    <div class="form-card">
+        <h1>BOZP Expert</h1>
+        <p>Vyplňte své údaje a otestujte své znalosti BOZP.</p>
+
+        <form id="contact-form">
+            <div class="form-group">
+                <label for="name">Jméno</label>
+                <input id="name" type="text" name="name" placeholder="Vaše jméno">
+                <span class="field-error" id="name-error">Zadejte prosím své jméno.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" placeholder="your@email.com">
+                <span class="field-error" id="email-error">Zadejte platnou emailovou adresu.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefon</label>
+                <input id="phone" type="tel" name="phone" placeholder="+420 123 456 789">
+                <span class="field-error" id="phone-error">Zadejte platné číslo (min. 9 číslic).</span>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn form-submit">Vstoupit do hry</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 2 — Question 1
+════════════════════════════════════════════════════════════ -->
+<div id="step2" class="step">
+    <div class="question-card">
+        <div class="question-counter">1 / 4</div>
+        <h2>Otazka 1</h2>
+        <div class="options">
+            <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
+            <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 3 — Question 2
+════════════════════════════════════════════════════════════ -->
+<div id="step3" class="step">
+    <div class="question-card">
+        <div class="question-counter">2 / 4</div>
+        <h2>Otazka 2</h2>
+        <div class="options">
+            <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
+            <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 4 — Question 3
+════════════════════════════════════════════════════════════ -->
+<div id="step4" class="step">
+    <div class="question-card">
+        <div class="question-counter">3 / 4</div>
+        <h2>Otazka 3</h2>
+        <div class="options">
+            <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
+            <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 5 — Question 4
+════════════════════════════════════════════════════════════ -->
+<div id="step5" class="step">
+    <div class="question-card">
+        <div class="question-counter">4 / 4</div>
+        <h2>Otazka 4</h2>
+        <div class="options">
+            <button class="option" correct="true"  onclick="handleOption(this)">Ano</button>
+            <button class="option" correct="false" onclick="handleOption(this)">Ne</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     Step 6 — Results
+════════════════════════════════════════════════════════════ -->
+<div id="step6" class="step">
+    <div class="card">
+        <h1>Výsledky</h1>
+        <div class="score-display" id="score-display">0 / 4</div>
+        <p id="score-text">Text, který se upraví dle počtu správných odpovědí.</p>
+        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">Zjistit více</a>
+    </div>
+</div>
+
+
+<script>
+    const TOTAL_QUESTIONS = 4;
+    let score = 0;
+
+    function goToStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+    }
+
+    function handleOption(el) {
+        // Disable all options in the current question to prevent double-clicks
+        const allOptions = el.closest('.options').querySelectorAll('.option');
+        allOptions.forEach(o => o.style.pointerEvents = 'none');
+
+        const isCorrect = el.getAttribute('correct') === 'true';
+        if (isCorrect) {
+            score++;
+            el.classList.add('correct');
+        } else {
+            el.classList.add('wrong');
+        }
+
+        const currentStep = parseInt(el.closest('.step').id.replace('step', ''));
+        const nextStep = currentStep + 1;
+
+        setTimeout(() => {
+            if (nextStep > TOTAL_QUESTIONS + 1) {
+                showResults();
+            } else {
+                goToStep(nextStep);
+            }
+        }, 500);
+    }
+
+    function showResults() {
+        document.getElementById('score-display').textContent = score + ' / ' + TOTAL_QUESTIONS;
+
+        const textEl = document.getElementById('score-text');
+        if (score === TOTAL_QUESTIONS) {
+            textEl.textContent = 'Vsechno spravne';
+        } else if (score === TOTAL_QUESTIONS - 1) {
+            textEl.textContent = 'Dobre mas 3';
+        } else if (score === TOTAL_QUESTIONS - 2) {
+            textEl.textContent = 'DObre mas 2';
+        } else if (score === TOTAL_QUESTIONS - 3) {
+            textEl.textContent = 'DObre mas 1';
+        } else {
+            textEl.textContent = ':( nula';
+        }
+
+        goToStep(6);
+    }
+
+    // ── Form validation ────────────────────────────────────────
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    function showError(inputId, errorId) {
+        document.getElementById(inputId).classList.add('invalid');
+        document.getElementById(errorId).classList.add('visible');
+    }
+
+    function clearError(inputId, errorId) {
+        document.getElementById(inputId).classList.remove('invalid');
+        document.getElementById(errorId).classList.remove('visible');
+    }
+
+    function validateName() {
+        const val = document.getElementById('name').value.trim();
+        if (!val) { showError('name', 'name-error'); return false; }
+        clearError('name', 'name-error'); return true;
+    }
+
+    function validateEmail() {
+        const val = document.getElementById('email').value.trim();
+        if (!emailRegex.test(val)) { showError('email', 'email-error'); return false; }
+        clearError('email', 'email-error'); return true;
+    }
+
+    function validatePhone() {
+        const val = document.getElementById('phone').value.trim();
+        if (!val) { clearError('phone', 'phone-error'); return true; } // optional
+        const digits = val.replace(/\D/g, '');
+        if (digits.length < 9) { showError('phone', 'phone-error'); return false; }
+        clearError('phone', 'phone-error'); return true;
+    }
+
+    document.getElementById('name').addEventListener('blur', validateName);
+    document.getElementById('email').addEventListener('blur', validateEmail);
+    document.getElementById('phone').addEventListener('blur', validatePhone);
+
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const ok = validateName() & validateEmail() & validatePhone();
+        if (!ok) return;
+        score = 0; // reset score on each new run
+        goToStep(2);
+    });
+</script>
+
+</body>
+</html>
