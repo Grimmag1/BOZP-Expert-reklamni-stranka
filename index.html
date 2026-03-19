@@ -305,7 +305,9 @@
         <h1>BOZP Expert</h1>
         <p>Vyplňte své údaje a otestujte své znalosti BOZP.</p>
 
-        <form id="contact-form">
+        <form id="contact-form" name="contact" data-netlify="true">
+            <input type="hidden" name="form-name" value="contact">
+            <input type="hidden" name="session_id" id="contact-session-id">
             <div class="form-group">
                 <label for="name">Jméno</label>
                 <input id="name" type="text" name="name" placeholder="Vaše jméno">
@@ -390,6 +392,21 @@
 </div>
 
 
+<!-- Hidden Netlify form for quiz results (detected at deploy time) -->
+<form name="quiz-results" data-netlify="true" hidden>
+    <input name="form-name">
+    <input name="session_id">
+    <input name="name">
+    <input name="email">
+    <input name="phone">
+    <input name="status">
+    <input name="skore">
+    <input name="otazka_1">
+    <input name="otazka_2">
+    <input name="otazka_3">
+    <input name="otazka_4">
+</form>
+
 <!-- ═══════════════════════════════════════════════════════════
      Step 6 — Results
 ════════════════════════════════════════════════════════════ -->
@@ -398,14 +415,19 @@
         <h1>Výsledky</h1>
         <div class="score-display" id="score-display">0 / 4</div>
         <p id="score-text">Text, který se upraví dle počtu správných odpovědí.</p>
-        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">Zjistit více</a>
+        <a href="https://www.google.com" class="btn" style="display:inline-block;text-decoration:none;margin-top:8px;">ZKus si demo</a>
     </div>
 </div>
 
 
 <script>
     const TOTAL_QUESTIONS = 4;
+    const sessionId = Math.random().toString(36).slice(2);
     let score = 0;
+    let contactData = null;
+    let answers = []
+    let quizFinished = false;
+    let partialSent = false;
 
     function goToStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -413,7 +435,6 @@
     }
 
     function handleOption(el) {
-        // Disable all options in the current question to prevent double-clicks
         const allOptions = el.closest('.options').querySelectorAll('.option');
         allOptions.forEach(o => o.style.pointerEvents = 'none');
 
@@ -424,6 +445,9 @@
         } else {
             el.classList.add('wrong');
         }
+
+        const questionNumber = parseInt(el.closest('.step').id.replace('step', '')) - 1; // step2 = Q1
+        answers[questionNumber - 1] = el.textContent.trim();
 
         const currentStep = parseInt(el.closest('.step').id.replace('step', ''));
         const nextStep = currentStep + 1;
@@ -438,6 +462,7 @@
     }
 
     function showResults() {
+        quizFinished = true;
         document.getElementById('score-display').textContent = score + ' / ' + TOTAL_QUESTIONS;
 
         const textEl = document.getElementById('score-text');
@@ -454,7 +479,35 @@
         }
 
         goToStep(6);
+        sendQuizResults('dokončeno');
     }
+
+    
+    function sendQuizResults(status) {
+        if (!contactData) return;
+        const params = new URLSearchParams({
+            'form-name': 'quiz-results',
+            session_id:  sessionId,
+            name:        contactData.name,
+            email:       contactData.email,
+            phone:       contactData.phone,
+            status:      status,
+            skore:       score + ' / ' + TOTAL_QUESTIONS,
+        });
+        for (let i = 0; i < answers.length; i++) {
+            params.set('otazka_' + (i + 1), answers[i]);
+        }
+        const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+        navigator.sendBeacon('/', blob);
+    }
+
+    // Send partial data once if user leaves mid-quiz
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden && contactData && !quizFinished && !partialSent && answers.length > 0) {
+            partialSent = true;
+            sendQuizResults('nedokončeno');
+        }
+    });
 
     // ── Form validation ────────────────────────────────────────
 
@@ -494,12 +547,50 @@
     document.getElementById('email').addEventListener('blur', validateEmail);
     document.getElementById('phone').addEventListener('blur', validatePhone);
 
-    document.getElementById('contact-form').addEventListener('submit', function (e) {
+    document.getElementById('contact-form').addEventListener('submit', async function (e) {
         e.preventDefault();
+
         const ok = validateName() & validateEmail() & validatePhone();
         if (!ok) return;
-        score = 0; // reset score on each new run
-        goToStep(2);
+
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Startujeme...';
+
+        contactData = {
+            name:  document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+        };
+
+        document.getElementById('contact-session-id').value = sessionId;
+
+        try {
+            const formData = new FormData(this);
+            const res = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            });
+
+            if (res.ok) {
+                score = 0;
+                answers = [];
+                quizFinished = false;
+                partialSent = false;
+                goToStep(2);
+            } else {
+                contactData = null;
+                btn.disabled = false;
+                btn.textContent = 'Vstoupit do hry';
+                alert('Chyba ' + res.status + '. Zkuste to prosím znovu.');
+            }
+        } catch (err) {
+            contactData = null;
+            btn.disabled = false;
+            btn.textContent = 'Vstoupit do hry';
+            alert('Chyba připojení: ' + err.message);
+        }
     });
 </script>
 
