@@ -400,6 +400,7 @@
         <h1>Už stačí jen vyplnit kontakt</h1>
 
         <form id="contact-form">
+            <input type="hidden" name="access_key" value="25cb55c8-5b23-47d7-893e-e9eda98385c8">
             <!-- Hidden answer fields, populated by JS before showing this step -->
             <input type="hidden" name="skore"    id="hidden-skore">
             <input type="hidden" name="otazka_1" id="hidden-otazka-1">
@@ -426,7 +427,6 @@
             </div>
 
             <button type="submit" id="submit-btn" class="btn form-submit">Zobrazit výsledky</button>
-            <button type="button" onclick="showResults()" style="width:100%;margin-top:8px;padding:10px;background:none;border:1px dashed #ccc;border-radius:8px;color:#aaa;font-size:0.8rem;cursor:pointer;">přeskočit</button>
         </form>
     </div>
 </div>
@@ -446,7 +446,7 @@
 
 
 <script>
-    const FORMSPREE_URL = 'https://formspree.io/f/mdawbojv';
+    const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
     const TOTAL_QUESTIONS = 4;
     let score = 0;
     let answers = [];
@@ -560,7 +560,7 @@
         btn.textContent = 'Odesílám...';
 
         try {
-            const res = await fetch(FORMSPREE_URL, {
+            const res = await fetch(WEB3FORMS_URL, {
                 method: 'POST',
                 body: new FormData(this),
                 headers: { 'Accept': 'application/json' }
